@@ -1,1 +1,393 @@
-# jorfbern.github.io
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Movie Club Dashboard</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#030712;color:#f3f4f6;min-height:100vh}
+.container{max-width:1200px;margin:0 auto;padding:16px}
+.header{text-align:center;margin-bottom:28px}
+.header h1{font-size:2.2rem;background:linear-gradient(90deg,#818cf8,#a78bfa,#f472b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px}
+.header p{color:#9ca3af;font-size:.875rem}
+.tabs{display:flex;gap:4px;background:#111827;border:1px solid #1f2937;border-radius:10px;padding:4px;margin-bottom:24px;flex-wrap:wrap;justify-content:center}
+.tab{padding:10px 18px;border-radius:8px;border:none;background:transparent;color:#9ca3af;cursor:pointer;font-size:.82rem;font-weight:600;transition:all .2s}
+.tab:hover{color:#e5e7eb;background:#1f2937}
+.tab.active{background:#6366f1;color:white}
+.kpi-row{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:24px}
+@media(max-width:700px){.kpi-row{grid-template-columns:repeat(2,1fr)}}
+.kpi{background:#111827;border:1px solid #1f2937;border-radius:12px;padding:18px 12px;text-align:center}
+.kpi .icon{font-size:1.2rem;margin-bottom:4px}
+.kpi .value{font-size:1.6rem;font-weight:700;color:white}
+.kpi .label{font-size:.72rem;color:#9ca3af;margin-top:2px;text-transform:uppercase;letter-spacing:.5px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px}
+@media(max-width:768px){.grid2{grid-template-columns:1fr}}
+.grid3{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.card{background:#111827;border:1px solid #1f2937;border-radius:12px;overflow:hidden;margin-bottom:0}
+.card+.card{margin-top:0}
+.card-header{padding:18px 18px 6px}
+.card-header h3{color:white;font-size:1.05rem;margin-bottom:3px}
+.card-header p{color:#6b7280;font-size:.78rem}
+.card-body{padding:10px 18px 18px}
+.chart-container{width:100%;overflow-x:auto}
+.chart-container svg{display:block}
+.list-item{display:flex;align-items:center;justify-content:space-between;background:#1f2937;border-radius:8px;padding:9px 12px;margin-bottom:6px}
+.list-item .rank{font-weight:700;width:32px;text-align:center;margin-right:8px;flex-shrink:0;font-size:.95rem}
+.list-item .info{flex:1;min-width:0}
+.list-item .title-text{color:white;font-size:.85rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+.list-item .meta{color:#6b7280;font-size:.7rem}
+.badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.75rem;font-weight:600;color:white}
+.bg-indigo{background:#4f46e5}.bg-red{background:#dc2626}.bg-green{background:#059669}.bg-yellow{background:#d97706}
+.five-star-card{background:linear-gradient(135deg,rgba(120,80,0,.2),#1f2937);border:1px solid rgba(202,138,4,.25);border-radius:10px;padding:12px}
+.five-star-card .ft{color:white;font-weight:500;font-size:.87rem}
+.five-star-card .fy{color:#9ca3af;font-size:.72rem}
+.five-star-card .fb{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
+.member-badge{padding:3px 9px;border-radius:999px;font-size:.7rem;font-weight:600;color:white}
+.ht-card{background:#1f2937;border-radius:10px;padding:12px;margin-bottom:10px}
+.ht-top{display:flex;justify-content:space-between;align-items:flex-start}
+.ht-bars{margin-top:8px}
+.ht-bar{height:8px;border-radius:4px;margin-bottom:4px}
+.ht-labels{display:flex;justify-content:space-between;font-size:.65rem}
+table{width:100%;border-collapse:collapse;font-size:.84rem}
+th{text-align:center;padding:10px 8px;color:#9ca3af;border-bottom:1px solid #374151;font-weight:500;font-size:.78rem}
+th:first-child{text-align:left}
+td{padding:9px 8px;text-align:center;border-bottom:1px solid #1f2937;color:#d1d5db}
+td:first-child{text-align:left}
+tr:hover td{background:rgba(31,41,55,.5)}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:7px;vertical-align:middle}
+.footer{text-align:center;color:#4b5563;font-size:.72rem;margin-top:36px;padding-bottom:20px}
+.scroll-x{overflow-x:auto}
+.tab-content{display:none}
+.tab-content.active{display:block}
+.tooltip-box{position:fixed;pointer-events:none;background:#111827;border:1px solid #374151;border-radius:8px;padding:8px 12px;font-size:12px;color:#e5e7eb;z-index:9999;max-width:260px;box-shadow:0 8px 24px rgba(0,0,0,.5);transition:opacity .1s;opacity:0}
+.tooltip-box.show{opacity:1}
+.tooltip-box .tt-title{font-weight:700;color:white;margin-bottom:2px}
+.tooltip-box .tt-sub{color:#9ca3af;font-size:11px}
+.tooltip-box .tt-row{margin-top:2px}
+</style>
+</head>
+<body>
+<div class="container" id="app"></div>
+<div class="tooltip-box" id="tooltip"></div>
+<script>
+// ─── DATA ───
+const M=[{p:1,t:"Heat",y:1995,s:"Rob",my:3,im:8.3,rt:84,bl:83.5},{p:2,t:"The Deer Hunter",y:1978,s:"Liz",my:5,im:8.1,rt:86,bl:83.5},{p:3,t:"A Clockwork Orange",y:1971,s:"Darren",my:3,im:8.2,rt:86,bl:84},{p:4,t:"RRR",y:2022,s:"Shea",my:5,im:7.8,rt:96,bl:87},{p:5,t:"Death at a Funeral",y:2007,s:"Wes",my:3,im:7.3,rt:63,bl:68},{p:6,t:"Sunshine",y:2007,s:"Jeff",my:4,im:7.2,rt:77,bl:74.5},{p:7,t:"Raw",y:2016,s:"Hayden",my:2,im:6.9,rt:92,bl:80.5},{p:8,t:"Tombstone",y:1993,s:"Nick",my:4,im:7.8,rt:76,bl:77},{p:9,t:"Midnight Run",y:1988,s:"Lucas",my:4,im:7.5,rt:95,bl:85},{p:10,t:"TAR",y:2022,s:"Rob",my:4,im:7.4,rt:91,bl:82.5},{p:11,t:"On Golden Pond",y:1981,s:"Liz",my:3,im:7.6,rt:91,bl:83.5},{p:12,t:"Pan's Labyrinth",y:2006,s:"Darren",my:4,im:8.2,rt:95,bl:88.5},{p:13,t:"About Time",y:2013,s:"Shea",my:5,im:7.8,rt:71,bl:74.5},{p:14,t:"The Lives of Others",y:2006,s:"Wes",my:3,im:8.4,rt:92,bl:88},{p:15,t:"Apocalypto",y:2006,s:"Jeff",my:4,im:7.8,rt:65,bl:71.5},{p:16,t:"Twelve Monkeys",y:1995,s:"Hayden",my:2,im:8,rt:88,bl:84},{p:17,t:"True Lies",y:1994,s:"Lucas",my:3,im:7.3,rt:77,bl:75},{p:18,t:"Kingpin",y:1996,s:"Nick",my:3,im:6.9,rt:51,bl:60},{p:19,t:"Divine Secrets of the Ya-Ya Sisterhood",y:2002,s:"Teo",my:3,im:6.1,rt:43,bl:52},{p:20,t:"Synecdoche, New York",y:2008,s:"Rob",my:2,im:7.5,rt:69,bl:72},{p:21,t:"Waiting for Guffman",y:1996,s:"Liz",my:3,im:7.4,rt:90,bl:82},{p:22,t:"Big Fish",y:2003,s:"Darren",my:4,im:8,rt:76,bl:78},{p:23,t:"One Hour Photo",y:2002,s:"Shea",my:3,im:6.8,rt:81,bl:74.5},{p:24,t:"12 Angry Men",y:1957,s:"Wes",my:5,im:9,rt:100,bl:95},{p:25,t:"The Death of Stalin",y:2017,s:"Jeff",my:4,im:7.3,rt:94,bl:83.5},{p:26,t:"The Pentagon Wars",y:1998,s:"Hayden",my:4,im:7.1,rt:84,bl:77.5},{p:27,t:"A Good Person",y:2023,s:"Lucas",my:3,im:7.1,rt:57,bl:64},{p:28,t:"The Hate U Give",y:2018,s:"Teo",my:3,im:7.5,rt:97,bl:86},{p:29,t:"Whiplash",y:2014,s:"Rob",my:4,im:8.5,rt:94,bl:89.5},{p:30,t:"Harvey",y:1950,s:"Liz",my:3,im:7.9,rt:88,bl:83.5},{p:31,t:"Planet of the Apes",y:1968,s:"Darren",my:3.5,im:8,rt:86,bl:83},{p:32,t:"The Taking of Deborah Logan",y:2014,s:"Wes",my:3,im:6,rt:92,bl:76},{p:33,t:"Ready or Not",y:2019,s:"Shea",my:3,im:6.8,rt:89,bl:78.5},{p:34,t:"The Wailing",y:2016,s:"Jeff",my:4,im:7.4,rt:99,bl:86.5},{p:35,t:"As Above, So Below",y:2014,s:"Hayden",my:3.5,im:6.3,rt:29,bl:46},{p:36,t:"The Thing",y:1982,s:"Lucas",my:4,im:8.2,rt:85,bl:83.5},{p:37,t:"What Happened to Monday",y:2017,s:"Teo",my:2,im:6.8,rt:62,bl:65},{p:38,t:"Brazil",y:1985,s:"Rob",my:3,im:7.8,rt:98,bl:88},{p:39,t:"Cool Hand Luke",y:1967,s:"Wes",my:4,im:8,rt:100,bl:90},{p:40,t:"House of Flying Daggers",y:2004,s:"Darren",my:2.5,im:7.5,rt:87,bl:81},{p:41,t:"Josie and the Pussycats",y:2001,s:"Shea",my:3.5,im:5.7,rt:54,bl:55.5},{p:42,t:"Psycho",y:1960,s:"Wes",my:4,im:8.5,rt:97,bl:91},{p:43,t:"Apocalypse Now",y:1979,s:"Jeff",my:4.5,im:8.4,rt:91,bl:87.5},{p:44,t:"The American President",y:1995,s:"Lucas",my:4,im:6.8,rt:91,bl:79.5},{p:45,t:"Dog Day Afternoon",y:1975,s:"Hayden",my:3,im:8,rt:96,bl:88},{p:46,t:"Self Reliance",y:2023,s:"Teo",my:3,im:6,rt:73,bl:66.5},{p:47,t:"Master and Commander",y:2003,s:"Rob",my:5,im:7.5,rt:85,bl:80},{p:48,t:"Amelie",y:2001,s:"Liz",my:4,im:8.3,rt:90,bl:86.5},{p:49,t:"O Brother, Where Art Thou?",y:2000,s:"Darren",my:4,im:7.7,rt:78,bl:77.5},{p:50,t:"The Nice Guys",y:2016,s:"Shea",my:4,im:7.4,rt:91,bl:82.5},{p:51,t:"Ghost in the Shell",y:1995,s:"Wes",my:1.5,im:7.9,rt:95,bl:87},{p:52,t:"The Abyss",y:1989,s:"Jeff",my:4,im:7.5,rt:76,bl:75.5},{p:53,t:"Das Boot",y:1981,s:"Hayden",my:5,im:8.4,rt:98,bl:91},{p:54,t:"They Cloned Tyrone",y:2023,s:"Lucas",my:3,im:6.6,rt:95,bl:80.5},{p:55,t:"Beau Is Afraid",y:2023,s:"Evan",my:2,im:6.6,rt:67,bl:66.5},{p:56,t:"Burlesque",y:2010,s:"Teo",my:1,im:6.4,rt:37,bl:50.5},{p:57,t:"City of God",y:2002,s:"Rob",my:2,im:8.6,rt:91,bl:88.5},{p:58,t:"Jerry Maguire",y:1996,s:"Liz",my:5,im:7.3,rt:84,bl:78.5},{p:59,t:"Frank",y:2014,s:"Darren",my:3,im:6.9,rt:92,bl:80.5},{p:60,t:"Moneyball",y:2011,s:"Shea",my:5,im:7.6,rt:94,bl:85},{p:61,t:"Paddington",y:2014,s:"Wes",my:3,im:7.3,rt:97,bl:85},{p:62,t:"Dungeons & Dragons: Honor Among Thieves",y:2023,s:"Jeff",my:4,im:7.2,rt:91,bl:81.5},{p:63,t:"Children of Men",y:2006,s:"Hayden",my:4,im:7.9,rt:92,bl:85.5},{p:64,t:"The Purge",y:2013,s:"Teo",my:2,im:5.8,rt:41,bl:49.5},{p:65,t:"Unfrosted",y:2024,s:"Lucas",my:1.5,im:5.5,rt:39,bl:47},{p:66,t:"Before Sunrise",y:1995,s:"Evan",my:4,im:8.1,rt:100,bl:90.5},{p:67,t:"Four Lions",y:2010,s:"Rob",my:3,im:7.3,rt:84,bl:78.5},{p:68,t:"The Birdcage",y:1996,s:"Liz",my:5,im:7.2,rt:84,bl:78},{p:69,t:"2001: A Space Odyssey",y:1968,s:"Darren",my:null,im:8.3,rt:90,bl:86.5},{p:70,t:"Knock at the Cabin",y:2023,s:"Shea",my:3,im:6.1,rt:67,bl:64},{p:71,t:"Chinatown",y:1974,s:"Wes",my:3,im:8.1,rt:98,bl:89.5},{p:72,t:"Trainspotting",y:1996,s:"Jeff",my:5,im:8.1,rt:90,bl:85.5},{p:73,t:"Doctor Sleep",y:2019,s:"Hayden",my:3,im:7.3,rt:78,bl:75.5},{p:74,t:"Once",y:2007,s:"Lucas",my:4,im:7.8,rt:97,bl:87.5},{p:75,t:"Don't Worry Darling",y:2022,s:"Teo",my:3,im:6.3,rt:38,bl:50.5},{p:76,t:"The Bourne Identity",y:2002,s:"Evan",my:3,im:7.8,rt:84,bl:81},{p:77,t:"Hillbilly Elegy",y:2020,s:"Rob",my:2,im:6.7,rt:24,bl:45.5},{p:78,t:"Friday Night Lights",y:2004,s:"Liz",my:1,im:7.2,rt:82,bl:77},{p:79,t:"Mad Max 2",y:1981,s:"Darren",my:2,im:7.6,rt:93,bl:84.5},{p:80,t:"The Iron Claw",y:2023,s:"Shea",my:5,im:7.6,rt:89,bl:82.5},{p:81,t:"The Girl with the Dragon Tattoo",y:2011,s:"Jeff",my:5,im:7.8,rt:86,bl:82},{p:82,t:"Saltburn",y:2023,s:"Wes",my:3,im:7,rt:72,bl:71},{p:83,t:"Don't Breathe",y:2016,s:"Hayden",my:3,im:7.1,rt:88,bl:79.5},{p:84,t:"Possessor",y:2020,s:"Lucas",my:2,im:6.5,rt:94,bl:79.5},{p:85,t:"I'm Thinking of Ending Things",y:2020,s:"Evan",my:1,im:6.5,rt:82,bl:73.5},{p:86,t:"Videodrome",y:1983,s:"Rob",my:3,im:7.2,rt:83,bl:77.5},{p:87,t:"[REC]",y:2007,s:"Liz",my:3,im:7.4,rt:90,bl:82},{p:88,t:"The Whale",y:2022,s:"Darren",my:3,im:7.6,rt:64,bl:70},{p:89,t:"Melancholia",y:2011,s:"Shea",my:4.5,im:7.1,rt:79,bl:75},{p:90,t:"Marcel the Shell with Shoes On",y:2021,s:"Wes",my:3,im:7.6,rt:98,bl:87},{p:91,t:"MacGruber",y:2010,s:"Jeff",my:3,im:5.6,rt:47,bl:51.5},{p:92,t:"Prisoners",y:2013,s:"Hayden",my:5,im:8.2,rt:81,bl:81.5},{p:93,t:"Dr. Strangelove",y:1964,s:"Lucas",my:5,im:8.3,rt:98,bl:90.5},{p:94,t:"The Cooler",y:2003,s:"Evan",my:2,im:6.9,rt:78,bl:73.5},{p:95,t:"Annie Hall",y:1977,s:"Rob",my:4,im:7.9,rt:97,bl:88},{p:96,t:"If Beale Street Could Talk",y:2018,s:"Liz",my:3,im:7.1,rt:95,bl:83},{p:97,t:"Thelma",y:2024,s:"Shea",my:3.5,im:7,rt:98,bl:84},{p:98,t:"Juror #2",y:2024,s:"Wes",my:2.5,im:7,rt:93,bl:81.5},{p:99,t:"Blue Velvet",y:1986,s:"Jeff",my:3,im:7.7,rt:91,bl:84},{p:100,t:"The Hunt",y:2020,s:"Hayden",my:3,im:6.6,rt:57,bl:61.5},{p:101,t:"A Real Pain",y:2024,s:"Lucas",my:3,im:7,rt:96,bl:83},{p:102,t:"Under the Silver Lake",y:2018,s:"Rob",my:3,im:6.5,rt:58,bl:61.5},{p:103,t:"Sense and Sensibility",y:1995,s:"Liz",my:4,im:7.7,rt:97,bl:87},{p:104,t:"Ben-Hur",y:1959,s:"Darren",my:4,im:8.1,rt:87,bl:84},{p:105,t:"Anora",y:2024,s:"Shea",my:4,im:7.4,rt:93,bl:83.5},{p:106,t:"Heretic",y:2024,s:"Wes",my:3,im:7,rt:90,bl:80},{p:107,t:"The New World",y:2005,s:"Jeff",my:5,im:6.7,rt:63,bl:65},{p:108,t:"Oldboy",y:2003,s:"Hayden",my:4,im:8.3,rt:82,bl:82.5},{p:109,t:"Enemy of the State",y:1998,s:"Lucas",my:3,im:7.3,rt:71,bl:72},{p:110,t:"Midnight in Paris",y:2011,s:"Teo",my:3,im:7.6,rt:93,bl:84.5},{p:111,t:"The Zone of Interest",y:2023,s:"Rob",my:4,im:7.3,rt:93,bl:83},{p:112,t:"Silverado",y:1985,s:"Liz",my:2.5,im:7.2,rt:78,bl:75},{p:113,t:"Rollerball",y:1975,s:"Darren",my:1,im:6.5,rt:56,bl:60.5},{p:114,t:"Mission: Impossible Fallout",y:2018,s:"Jeff",my:4,im:7.7,rt:98,bl:87.5},{p:115,t:"The Gods Must Be Crazy",y:1980,s:"Wes",my:2.5,im:7.3,rt:86,bl:79.5},{p:116,t:"Companion",y:2025,s:"Shea",my:3,im:6.9,rt:93,bl:81},{p:117,t:"Monsters",y:2010,s:"Hayden",my:2,im:6.3,rt:75,bl:69},{p:118,t:"What's Up, Doc?",y:1972,s:"Lucas",my:3.5,im:7.7,rt:88,bl:82.5},{p:119,t:"Network",y:1976,s:"Rob",my:3,im:8.1,rt:90,bl:85.5},{p:120,t:"Grind",y:2003,s:"Liz",my:3,im:5.9,rt:8,bl:33.5},{p:121,t:"Friendship",y:2024,s:"Shea",my:4,im:6.6,rt:88,bl:77},{p:122,t:"Sinners",y:2025,s:"Wes",my:4,im:7.5,rt:97,bl:86},{p:123,t:"Aliens",y:1986,s:"Jeff",my:4,im:8.4,rt:94,bl:89},{p:124,t:"Interview with the Vampire",y:1994,s:"Hayden",my:1,im:7.5,rt:66,bl:70.5},{p:125,t:"Sneakers",y:1992,s:"Lucas",my:3,im:7.1,rt:80,bl:75.5},{p:126,t:"Let the Right One In",y:2008,s:"Teo",my:3,im:7.8,rt:98,bl:88},{p:127,t:"Perfect Blue",y:1997,s:"Rob",my:2,im:8,rt:84,bl:82},{p:128,t:"The Phantom of the Opera",y:2004,s:"Liz",my:1.5,im:7.2,rt:32,bl:52},{p:129,t:"Saw",y:2004,s:"Darren",my:3,im:7.6,rt:50,bl:63},{p:130,t:"Bring Her Back",y:2025,s:"Shea",my:3,im:7.1,rt:89,bl:80},{p:131,t:"The Exorcist",y:1973,s:"Wes",my:4,im:8.1,rt:78,bl:79.5},{p:132,t:"The Florida Project",y:2017,s:"Jeff",my:4,im:7.6,rt:96,bl:86},{p:133,t:"The China Syndrome",y:1979,s:"Hayden",my:3,im:7.4,rt:88,bl:81},{p:134,t:"Romancing the Stone",y:1984,s:"Lucas",my:2,im:6.9,rt:86,bl:77.5},{p:135,t:"Time Bandits",y:1981,s:"Rob",my:2,im:6.9,rt:92,bl:80.5},{p:136,t:"Grumpy Old Men",y:1993,s:"Liz",my:3,im:7,rt:67,bl:68.5},{p:137,t:"The Naked Gun",y:2025,s:"Shea",my:4,im:6.5,rt:87,bl:76},{p:138,t:"Stand by Me",y:1986,s:"Wes",my:3,im:8.1,rt:92,bl:86.5},{p:139,t:"Phantom Thread",y:2017,s:"Jeff",my:3.5,im:7.4,rt:91,bl:82.5},{p:140,t:"Platoon",y:1986,s:"Hayden",my:3.5,im:8.1,rt:89,bl:85},{p:141,t:"The Raid",y:2011,s:"Lucas",my:2.5,im:7.6,rt:87,bl:81.5},{p:142,t:"Boogie Nights",y:1997,s:"Rob",my:4,im:7.9,rt:91,bl:85},{p:143,t:"Love & Basketball",y:2000,s:"Liz",my:3,im:7.2,rt:86,bl:79},{p:144,t:"Bottoms",y:2023,s:"Shea",my:3,im:6.7,rt:91,bl:79},{p:145,t:"Flow",y:2024,s:"Wes",my:3,im:7.9,rt:97,bl:88},{p:146,t:"It Was Just an Accident",y:2025,s:"Jeff",my:3,im:7.5,rt:98,bl:86.5},{p:147,t:"Snatch",y:2000,s:"Hayden",my:2.5,im:8.2,rt:74,bl:78},{p:148,t:"Demolition Man",y:1993,s:"Lucas",my:4,im:6.7,rt:66,bl:66.5}];
+
+const MC={Rob:"#6366f1",Liz:"#f59e0b",Darren:"#10b981",Shea:"#ef4444",Wes:"#8b5cf6",Jeff:"#ec4899",Hayden:"#14b8a6",Lucas:"#f97316",Teo:"#3b82f6",Evan:"#84cc16",Nick:"#64748b"};
+const rated=M.filter(m=>m.my!==null);
+const members=[...new Set(M.map(m=>m.s))];
+const avg=(a)=>a.length?a.reduce((s,v)=>s+v,0)/a.length:0;
+
+// ─── TOOLTIP ───
+const tip=document.getElementById('tooltip');
+function showTip(e,html){tip.innerHTML=html;tip.classList.add('show');moveTip(e);}
+function moveTip(e){const x=e.clientX+12,y=e.clientY-10;tip.style.left=Math.min(x,window.innerWidth-270)+'px';tip.style.top=Math.max(4,y-tip.offsetHeight/2)+'px';}
+function hideTip(){tip.classList.remove('show');}
+
+// ─── SVG CHART HELPERS ───
+function barChart(data,{w=540,h=240,barKey='count',labelKey='label',color='#818cf8',colorFn=null,yMax=null,xLabel='',horizontal=false}={}){
+  const pad={t:16,r:20,b:xLabel?36:28,l:horizontal?70:40};
+  const cw=w-pad.l-pad.r, ch=h-pad.t-pad.b;
+  const maxVal=yMax||Math.max(...data.map(d=>d[barKey]))*1.15;
+  let svg=`<svg viewBox="0 0 ${w} ${h}" width="100%" style="max-width:${w}px" xmlns="http://www.w3.org/2000/svg">`;
+  // grid
+  if(!horizontal){
+    const ticks=5;
+    for(let i=0;i<=ticks;i++){
+      const yy=pad.t+ch-(ch/ticks)*i;
+      const val=(maxVal/ticks*i).toFixed(maxVal>10?0:1);
+      svg+=`<line x1="${pad.l}" y1="${yy}" x2="${w-pad.r}" y2="${yy}" stroke="#374151" stroke-dasharray="3,3"/>`;
+      svg+=`<text x="${pad.l-6}" y="${yy+4}" text-anchor="end" fill="#9ca3af" font-size="10">${val}</text>`;
+    }
+    const bw=Math.min(cw/data.length*.7,40);
+    const gap=(cw-bw*data.length)/(data.length);
+    data.forEach((d,i)=>{
+      const bh=(d[barKey]/maxVal)*ch;
+      const x=pad.l+i*(bw+gap)+gap/2;
+      const yy=pad.t+ch-bh;
+      const c=colorFn?colorFn(d,i):color;
+      svg+=`<rect x="${x}" y="${yy}" width="${bw}" height="${bh}" rx="3" fill="${c}" class="bar-rect" data-tip="${d._tip||d[labelKey]+': '+d[barKey]}"><animate attributeName="height" from="0" to="${bh}" dur="0.4s"/><animate attributeName="y" from="${pad.t+ch}" to="${yy}" dur="0.4s"/></rect>`;
+      svg+=`<text x="${x+bw/2}" y="${h-pad.b+14}" text-anchor="middle" fill="#9ca3af" font-size="${data.length>10?8:10}">${d[labelKey]}</text>`;
+    });
+    if(xLabel) svg+=`<text x="${pad.l+cw/2}" y="${h-2}" text-anchor="middle" fill="#6b7280" font-size="10">${xLabel}</text>`;
+  } else {
+    const bh=Math.min(ch/data.length*.7,28);
+    const gap=(ch-bh*data.length)/(data.length);
+    const ticks=4;
+    for(let i=0;i<=ticks;i++){
+      const xx=pad.l+(cw/ticks)*i;
+      const val=(maxVal/ticks*i).toFixed(maxVal>10?0:1);
+      svg+=`<line x1="${xx}" y1="${pad.t}" x2="${xx}" y2="${h-pad.b}" stroke="#374151" stroke-dasharray="3,3"/>`;
+      svg+=`<text x="${xx}" y="${h-pad.b+14}" text-anchor="middle" fill="#9ca3af" font-size="10">${val}</text>`;
+    }
+    data.forEach((d,i)=>{
+      const bw2=(d[barKey]/maxVal)*cw;
+      const yy=pad.t+i*(bh+gap)+gap/2;
+      const c=colorFn?colorFn(d,i):color;
+      svg+=`<rect x="${pad.l}" y="${yy}" width="${bw2}" height="${bh}" rx="3" fill="${c}" class="bar-rect" data-tip="${d._tip||d[labelKey]+': '+d[barKey]}"><animate attributeName="width" from="0" to="${bw2}" dur="0.4s"/></rect>`;
+      svg+=`<text x="${pad.l-6}" y="${yy+bh/2+4}" text-anchor="end" fill="#d1d5db" font-size="11">${d[labelKey]}</text>`;
+    });
+  }
+  svg+=`</svg>`;
+  return svg;
+}
+
+function scatterPlot(data,{w=520,h=320,xKey='x',yKey='y',xDomain,yDomain,xLabel='',yLabel='',colorFn=null}={}){
+  const pad={t:16,r:20,b:xLabel?40:28,l:yLabel?50:44};
+  const cw=w-pad.l-pad.r,ch=h-pad.t-pad.b;
+  const xMin=xDomain?xDomain[0]:Math.min(...data.map(d=>d[xKey]));
+  const xMax=xDomain?xDomain[1]:Math.max(...data.map(d=>d[xKey]));
+  const yMin=yDomain?yDomain[0]:Math.min(...data.map(d=>d[yKey]));
+  const yMax=yDomain?yDomain[1]:Math.max(...data.map(d=>d[yKey]));
+  const sx=v=>(v-xMin)/(xMax-xMin)*cw+pad.l;
+  const sy=v=>pad.t+ch-(v-yMin)/(yMax-yMin)*ch;
+  let svg=`<svg viewBox="0 0 ${w} ${h}" width="100%" style="max-width:${w}px" xmlns="http://www.w3.org/2000/svg">`;
+  // grid
+  for(let i=0;i<=4;i++){
+    const xx=pad.l+(cw/4)*i;
+    const yy=pad.t+(ch/4)*i;
+    svg+=`<line x1="${xx}" y1="${pad.t}" x2="${xx}" y2="${pad.t+ch}" stroke="#374151" stroke-dasharray="2,3"/>`;
+    svg+=`<line x1="${pad.l}" y1="${yy}" x2="${pad.l+cw}" y2="${yy}" stroke="#374151" stroke-dasharray="2,3"/>`;
+    const xv=(xMin+(xMax-xMin)/4*i).toFixed(1);
+    const yv=(yMax-(yMax-yMin)/4*i).toFixed(yMax>10?0:1);
+    svg+=`<text x="${xx}" y="${pad.t+ch+14}" text-anchor="middle" fill="#9ca3af" font-size="9">${xv}</text>`;
+    svg+=`<text x="${pad.l-6}" y="${yy+3}" text-anchor="end" fill="#9ca3af" font-size="9">${yv}</text>`;
+  }
+  data.forEach((d,i)=>{
+    const cx=sx(d[xKey]),cy=sy(d[yKey]);
+    const c=colorFn?colorFn(d):"#818cf8";
+    svg+=`<circle cx="${cx}" cy="${cy}" r="4.5" fill="${c}" fill-opacity="0.65" class="bar-rect" data-tip="${d._tip||''}"/>`;
+  });
+  if(xLabel) svg+=`<text x="${pad.l+cw/2}" y="${h-2}" text-anchor="middle" fill="#6b7280" font-size="10">${xLabel}</text>`;
+  if(yLabel) svg+=`<text x="13" y="${pad.t+ch/2}" text-anchor="middle" fill="#6b7280" font-size="10" transform="rotate(-90,13,${pad.t+ch/2})">${yLabel}</text>`;
+  svg+=`</svg>`;
+  return svg;
+}
+
+function areaLine(data,{w=800,h=260,valKey='val',labelKey='pos',color='#8b5cf6'}={}){
+  const pad={t:16,r:16,b:32,l:40};
+  const cw=w-pad.l-pad.r,ch=h-pad.t-pad.b;
+  const maxV=Math.max(...data.map(d=>d[valKey]))*1.15;
+  const minV=0;
+  const sx=(i)=>pad.l+(i/(data.length-1))*cw;
+  const sy=(v)=>pad.t+ch-((v-minV)/(maxV-minV))*ch;
+  let pts=data.map((d,i)=>`${sx(i)},${sy(d[valKey])}`).join(' ');
+  let areaPts=`${sx(0)},${pad.t+ch} `+pts+` ${sx(data.length-1)},${pad.t+ch}`;
+  let svg=`<svg viewBox="0 0 ${w} ${h}" width="100%" style="max-width:${w}px" xmlns="http://www.w3.org/2000/svg">`;
+  for(let i=0;i<=5;i++){
+    const yy=pad.t+(ch/5)*i;const v=(maxV-(maxV-minV)/5*i).toFixed(1);
+    svg+=`<line x1="${pad.l}" y1="${yy}" x2="${w-pad.r}" y2="${yy}" stroke="#374151" stroke-dasharray="3,3"/>`;
+    svg+=`<text x="${pad.l-6}" y="${yy+3}" text-anchor="end" fill="#9ca3af" font-size="9">${v}</text>`;
+  }
+  svg+=`<polygon points="${areaPts}" fill="${color}" fill-opacity="0.12"/>`;
+  svg+=`<polyline points="${pts}" fill="none" stroke="${color}" stroke-width="2"/>`;
+  // dots for individual ratings
+  data.forEach((d,i)=>{
+    if(d.dot!==undefined){
+      svg+=`<circle cx="${sx(i)}" cy="${sy(d.dot)}" r="2.5" fill="#f59e0b" class="bar-rect" data-tip="${d._tip||''}"/>`;
+    }
+  });
+  svg+=`<text x="${pad.l+cw/2}" y="${h-4}" text-anchor="middle" fill="#6b7280" font-size="10">Movie #</text>`;
+  svg+=`</svg>`;
+  return svg;
+}
+
+// ─── COMPUTED DATA ───
+function getStats(){
+  const ss=members.map(n=>{
+    const th=M.filter(m=>m.s===n);const tr=th.filter(m=>m.my!==null);
+    return{name:n,count:th.length,
+      avgMy:tr.length?+(avg(tr.map(m=>m.my))).toFixed(2):0,
+      avgBlend:+(avg(th.map(m=>m.bl))).toFixed(1),
+      avgImdb:+(avg(th.map(m=>m.im))).toFixed(2),
+      avgRt:+(avg(th.map(m=>m.rt))).toFixed(0)};
+  });
+  ss.sort((a,b)=>b.count-a.count);
+  return ss;
+}
+const stats=getStats();
+
+function getRatingDist(){
+  const d={};rated.forEach(m=>{const k=m.my;d[k]=(d[k]||0)+1;});
+  return [1,1.5,2,2.5,3,3.5,4,4.5,5].map(r=>({label:r.toString(),count:d[r]||0,_tip:r+' ★: '+(d[r]||0)+' movies'}));
+}
+
+function getDecades(){
+  const dec={};
+  M.forEach(m=>{const d=Math.floor(m.y/10)*10;if(!dec[d])dec[d]={decade:d,count:0,tb:0};dec[d].count++;dec[d].tb+=m.bl;});
+  return Object.values(dec).map(d=>({label:d.decade+'s',count:d.count,avgBl:+(d.tb/d.count).toFixed(1),_tip:d.decade+'s: '+d.count+' movies (avg blend: '+(d.tb/d.count).toFixed(1)+')'})).sort((a,b)=>parseInt(a.label)-parseInt(b.label));
+}
+
+function getRolling(){
+  const w=10;
+  return rated.map((m,i)=>{
+    const sl=rated.slice(Math.max(0,i-w+1),i+1);
+    const r=+(avg(sl.map(x=>x.my))).toFixed(2);
+    return{pos:m.p,val:r,dot:m.my,_tip:'#'+m.p+' '+m.t+'\nYour rating: '+m.my+' ★\nRolling avg: '+r};
+  });
+}
+
+// ─── RENDER ───
+let currentTab='overview';
+
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+function renderApp(){
+  const totalMovies=M.length;
+  const avgMy=(avg(rated.map(m=>m.my))).toFixed(2);
+  const avgImdb=(avg(M.map(m=>m.im))).toFixed(1);
+  const avgBlend=(avg(M.map(m=>m.bl))).toFixed(1);
+  const minY=Math.min(...M.map(m=>m.y)), maxY=Math.max(...M.map(m=>m.y));
+  const fiveStars=rated.filter(m=>m.my===5);
+
+  let html=`
+  <div class="header">
+    <h1>🎬 Movie Club Dashboard 🎬</h1>
+    <p>${totalMovies} movies watched • ${members.length} members • Films from ${minY}–${maxY}</p>
+  </div>
+  <div class="tabs">
+    ${['overview','members','ratings','hot-takes','leaderboard'].map(t=>
+      `<button class="tab ${currentTab===t?'active':''}" onclick="switchTab('${t}')">${
+        t==='overview'?'📊 Overview':t==='members'?'👥 Members':t==='ratings'?'⭐ Ratings':t==='hot-takes'?'🔥 Hot Takes':'🏆 Leaderboard'
+      }</button>`
+    ).join('')}
+  </div>`;
+
+  // ── OVERVIEW ──
+  html+=`<div class="tab-content ${currentTab==='overview'?'active':''}">
+    <div class="kpi-row">
+      <div class="kpi"><div class="icon">🎬</div><div class="value">${totalMovies}</div><div class="label">Movies Watched</div></div>
+      <div class="kpi"><div class="icon">👥</div><div class="value">${members.length}</div><div class="label">Club Members</div></div>
+      <div class="kpi"><div class="icon">⭐</div><div class="value">${avgMy} ★</div><div class="label">Your Avg Rating</div></div>
+      <div class="kpi"><div class="icon">📈</div><div class="value">${avgImdb}</div><div class="label">Avg IMDB</div></div>
+      <div class="kpi"><div class="icon">🎯</div><div class="value">${avgBlend}</div><div class="label">Avg Blend</div></div>
+    </div>
+    <div class="grid2">
+      <div class="card"><div class="card-header"><h3>Your Rating Distribution</h3><p>How you rated all ${rated.length} movies</p></div><div class="card-body"><div class="chart-container">${
+        barChart(getRatingDist(),{w:500,h:240,colorFn:(d)=>parseFloat(d.label)>=4?'#6366f1':parseFloat(d.label)<=2?'#ef4444':'#818cf8',xLabel:'Stars'})
+      }</div></div></div>
+      <div class="card"><div class="card-header"><h3>Movies by Decade</h3><p>How many films the club has watched per era</p></div><div class="card-body"><div class="chart-container">${
+        barChart(getDecades(),{w:500,h:240,color:'#6366f1'})
+      }</div></div></div>
+    </div>
+    <div class="card"><div class="card-header"><h3>Your Rating Journey</h3><p>10-movie rolling average over time (dots = individual ratings)</p></div><div class="card-body"><div class="chart-container">${
+      areaLine(getRolling(),{w:900,h:260,color:'#8b5cf6'})
+    }</div></div></div>
+  </div>`;
+
+  // ── MEMBERS ──
+  const byCount=[...stats].sort((a,b)=>b.count-a.count);
+  const byMyAvg=[...stats].sort((a,b)=>b.avgMy-a.avgMy);
+  const byBlendAvg=[...stats].sort((a,b)=>b.avgBlend-a.avgBlend);
+
+  html+=`<div class="tab-content ${currentTab==='members'?'active':''}">
+    <div class="grid2">
+      <div class="card"><div class="card-header"><h3>Picks per Member</h3><p>How many movies each person submitted</p></div><div class="card-body"><div class="chart-container">${
+        barChart(byCount.map(s=>({label:s.name,count:s.count,_tip:s.name+': '+s.count+' picks'})),{w:520,h:340,horizontal:true,colorFn:(d)=>MC[d.label]||'#818cf8'})
+      }</div></div></div>
+      <div class="card"><div class="card-header"><h3>Whose Picks Do You Like Most?</h3><p>Your avg rating for each member's picks</p></div><div class="card-body"><div class="chart-container">${
+        barChart(byMyAvg.map(s=>({label:s.name,count:s.avgMy,_tip:s.name+': '+s.avgMy+' ★ avg'})),{w:520,h:340,horizontal:true,yMax:5,colorFn:(d)=>MC[d.label]||'#818cf8'})
+      }</div></div></div>
+    </div>
+    <div class="card"><div class="card-header"><h3>Member Pick Quality — IMDB/RT Blend</h3><p>Average critic consensus of each member's picks</p></div><div class="card-body"><div class="chart-container">${
+      barChart(byBlendAvg.map(s=>({label:s.name,count:s.avgBlend,_tip:s.name+': '+s.avgBlend+' avg blend'})),{w:700,h:280,yMax:95,colorFn:(d)=>MC[d.label]||'#818cf8'})
+    }</div></div></div>
+  </div>`;
+
+  // ── RATINGS ──
+  const topBlend=[...M].sort((a,b)=>b.bl-a.bl).slice(0,10);
+  const bottomBlend=[...M].sort((a,b)=>a.bl-b.bl).slice(0,10);
+
+  const scatterYouVsCritics=rated.map(m=>({x:m.bl,y:m.my,_tip:m.t+' ('+m.y+')\nPicked by: '+m.s+'\nYour rating: '+m.my+' ★\nBlend: '+m.bl,s:m.s}));
+  const scatterImdbVsRt=M.map(m=>({x:m.im,y:m.rt,_tip:m.t+' ('+m.y+')\nIMDB: '+m.im+'\nRT: '+m.rt+'%'}));
+
+  html+=`<div class="tab-content ${currentTab==='ratings'?'active':''}">
+    <div class="grid2">
+      <div class="card"><div class="card-header"><h3>You vs. Critics</h3><p>Your rating (★) vs IMDB/RT Blend</p></div><div class="card-body"><div class="chart-container">${
+        scatterPlot(scatterYouVsCritics,{w:520,h:340,xDomain:[30,100],yDomain:[0.5,5.5],xLabel:'IMDB/RT Blend',yLabel:'Your ★',colorFn:d=>MC[d.s]||'#818cf8'})
+      }</div></div></div>
+      <div class="card"><div class="card-header"><h3>IMDB vs Rotten Tomatoes</h3><p>Do the critics agree?</p></div><div class="card-body"><div class="chart-container">${
+        scatterPlot(scatterImdbVsRt,{w:520,h:340,xDomain:[5,9.5],yDomain:[0,105],xLabel:'IMDB',yLabel:'Rotten Tomatoes',colorFn:()=>'#10b981'})
+      }</div></div></div>
+    </div>
+    <div class="grid2">
+      <div class="card"><div class="card-header"><h3>🏆 Top 10 by IMDB/RT Blend</h3></div><div class="card-body">${
+        topBlend.map((m,i)=>`<div class="list-item"><span class="rank" style="color:#facc15">${i+1}.</span><div class="info"><span class="title-text">${esc(m.t)}</span><span class="meta">${m.y} • picked by ${m.s}</span></div><div style="text-align:right"><span class="badge bg-indigo">${m.bl}</span>${m.my!==null?`<div style="color:#facc15;font-size:11px;margin-top:2px">${m.my} ★</div>`:''}</div></div>`).join('')
+      }</div></div>
+      <div class="card"><div class="card-header"><h3>👎 Bottom 10 by IMDB/RT Blend</h3></div><div class="card-body">${
+        bottomBlend.map((m,i)=>`<div class="list-item"><span class="rank" style="color:#ef4444">${i+1}.</span><div class="info"><span class="title-text">${esc(m.t)}</span><span class="meta">${m.y} • picked by ${m.s}</span></div><div style="text-align:right"><span class="badge bg-red">${m.bl}</span>${m.my!==null?`<div style="color:#facc15;font-size:11px;margin-top:2px">${m.my} ★</div>`:''}</div></div>`).join('')
+      }</div></div>
+    </div>
+  </div>`;
+
+  // ── HOT TAKES ──
+  const mapped=rated.map(m=>({...m,diff:m.my-(m.bl/20)}));
+  const disappointments=[...mapped].sort((a,b)=>a.diff-b.diff).slice(0,5);
+  const gems=[...mapped].sort((a,b)=>b.diff-a.diff).slice(0,5);
+
+  function hotCard(m){
+    return `<div class="ht-card"><div class="ht-top"><div><div style="color:#fff;font-weight:500;font-size:14px">${esc(m.t)}</div><div style="color:#6b7280;font-size:11px">${m.y} • picked by ${m.s}</div></div><div style="text-align:right"><div style="color:#facc15;font-weight:700">${m.my} ★</div><div style="color:#9ca3af;font-size:11px">Blend: ${m.bl}</div></div></div><div class="ht-bars"><div class="ht-bar" style="background:#eab308;width:${(m.my/5)*100}%"></div><div class="ht-bar" style="background:#6366f1;opacity:.4;width:${m.bl}%"></div></div><div class="ht-labels"><span style="color:#eab308">You</span><span style="color:#818cf8">Critics</span></div></div>`;
+  }
+
+  html+=`<div class="tab-content ${currentTab==='hot-takes'?'active':''}">
+    <p style="text-align:center;color:#9ca3af;font-size:13px;margin-bottom:16px">Where your opinion diverges most from critics (Blend scaled to 5-star equiv)</p>
+    <div class="grid2">
+      <div class="card"><div class="card-header"><h3>👎 Biggest Disappointments</h3><p>Critics loved it, you... didn't</p></div><div class="card-body">${disappointments.map(hotCard).join('')}</div></div>
+      <div class="card"><div class="card-header"><h3>🔥 Your Hidden Gems</h3><p>You saw something the critics missed</p></div><div class="card-body">${gems.map(hotCard).join('')}</div></div>
+    </div>
+    <div class="card" style="margin-top:20px"><div class="card-header"><h3>🏆 The Perfect 5s</h3><p>Every movie you gave the full 5 stars</p></div><div class="card-body"><div class="grid3">${
+      fiveStars.map(m=>`<div class="five-star-card"><div class="ft">${esc(m.t)}</div><div class="fy">${m.y}</div><div class="fb"><span class="member-badge" style="background:${MC[m.s]||'#64748b'}">${m.s}</span><span style="color:#facc15;font-size:12px">Blend: ${m.bl}</span></div></div>`).join('')
+    }</div></div></div>
+  </div>`;
+
+  // ── LEADERBOARD ──
+  const medals=['🥇','🥈','🥉'];
+  html+=`<div class="tab-content ${currentTab==='leaderboard'?'active':''}">
+    <div class="grid2">
+      <div class="card"><div class="card-header"><h3>🎯 Who Picks the Best Movies?</h3><p>Ranked by avg IMDB/RT Blend</p></div><div class="card-body">${
+        byBlendAvg.map((s,i)=>`<div class="list-item"><span class="rank">${i<3?medals[i]:(i+1)+'.'}</span><div class="info"><span class="title-text">${s.name}</span><span class="meta" style="margin-left:8px">(${s.count} picks)</span></div><span class="badge bg-indigo">${s.avgBlend}</span></div>`).join('')
+      }</div></div>
+      <div class="card"><div class="card-header"><h3>⭐ Who Do You Vibe With?</h3><p>Ranked by your avg rating of their picks</p></div><div class="card-body">${
+        byMyAvg.map((s,i)=>`<div class="list-item"><span class="rank">${i<3?medals[i]:(i+1)+'.'}</span><div class="info"><span class="title-text">${s.name}</span><span class="meta" style="margin-left:8px">(${s.count} picks)</span></div><span style="color:#facc15;font-weight:700">${s.avgMy} ★</span></div>`).join('')
+      }</div></div>
+    </div>
+    <div class="card" style="margin-top:20px"><div class="card-header"><h3>📊 Full Member Stats</h3></div><div class="card-body scroll-x">
+      <table>
+        <thead><tr><th style="text-align:left">Member</th><th>Picks</th><th>Your Avg ★</th><th>Avg IMDB</th><th>Avg RT</th><th>Avg Blend</th></tr></thead>
+        <tbody>${byBlendAvg.map(s=>`<tr>
+          <td><span class="dot" style="background:${MC[s.name]||'#64748b'}"></span>${s.name}</td>
+          <td>${s.count}</td>
+          <td style="color:#facc15;font-weight:600">${s.avgMy}</td>
+          <td>${s.avgImdb}</td>
+          <td>${s.avgRt}%</td>
+          <td><span class="badge" style="background:${s.avgBlend>=80?'#059669':s.avgBlend>=70?'#d97706':'#dc2626'}">${s.avgBlend}</span></td>
+        </tr>`).join('')}</tbody>
+      </table>
+    </div></div>
+  </div>`;
+
+  html+=`<div class="footer">Built with ❤️ for Movie Club • ${totalMovies} movies and counting</div>`;
+
+  document.getElementById('app').innerHTML=html;
+  attachTooltips();
+}
+
+function switchTab(t){currentTab=t;renderApp();}
+window.switchTab=switchTab;
+
+function attachTooltips(){
+  document.querySelectorAll('.bar-rect').forEach(el=>{
+    el.addEventListener('mouseenter',e=>{
+      const t=el.getAttribute('data-tip');
+      if(t) showTip(e,t.split('\n').map(l=>`<div>${esc(l)}</div>`).join(''));
+    });
+    el.addEventListener('mousemove',moveTip);
+    el.addEventListener('mouseleave',hideTip);
+  });
+}
+
+renderApp();
+</script>
+</body>
+</html>
