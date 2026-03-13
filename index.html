@@ -454,11 +454,14 @@ h+='</tbody></table></div></div></div>';
     var myRated=rated(me);
     var myAvg=myRated.length?avg(myRated.map(function(m){return gr(m,me)})).toFixed(2):'N/A';
     var fiveStars=myRated.filter(function(m){return gr(m,me)===5});
+    var submitted=M.filter(function(m){return m.s===me}).length;
+
 
     h+='<div class="tab-content '+(curTab===me?'active':'')+'">';
 
     // KPIs - 4 columns
-    h+='<div class="kpi-row kpi-row-4">';
+    h+='<div class="kpi-row">';
+    h+='<div class="kpi"><div class="icon">🎬</div><div class="value">'+submitted+'</div><div class="label">Submitted</div></div>';
     h+='<div class="kpi"><div class="icon">✅</div><div class="value">'+myRated.length+'</div><div class="label">Movies Rated</div></div>';
     h+='<div class="kpi"><div class="icon">⭐</div><div class="value">'+myAvg+' ★</div><div class="label">Avg Rating</div></div>';
     h+='<div class="kpi"><div class="icon">🏆</div><div class="value">'+fiveStars.length+'</div><div class="label">Perfect 5s</div></div>';
