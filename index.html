@@ -365,7 +365,7 @@ function render() {
   var botBl=M.slice().sort(function(a,b){return a.bl-b.bl}).slice(0,10);
 
   // Decades + top/bottom
-  h+='<div class="card" style="margin-bottom:20px"><div class="card-header"><h3>Movies by Decade</h3></div><div class="card-body"><div class="chart-container" style="min-height:200px">';
+  h+='<div class="card" style="margin-bottom:20px"><div class="card-header"><h3>Movies by Decade</h3></div><div class="card-body"><div class="chart-container">';
   h+=barChart(decData,{w:900,h:200,color:'#6366f1'});
   h+='</div></div></div>';
 
