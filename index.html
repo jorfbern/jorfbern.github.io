@@ -342,6 +342,17 @@ function render() {
   h+='<div class="kpi"><div class="icon">📅</div><div class="value">'+minY+'–'+maxY+'</div><div class="label">Year Range</div></div>';
   h+='</div>';
 
+  // This week's movie - update these two lines each week
+  var weeklyMovie = "One Battle After Another";
+  var weeklyPoster = "https://m.media-amazon.com/images/M/MV5BMzBkZmQ0NjMtNTZlMy00ZjdlLTg5ODUtYWFlNGM0YzE3MTg0XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg";
+
+  if(weeklyPoster){
+    h+='<div class="card" style="margin-bottom:20px"><div class="card-header"><h3>🍿 This Week: '+weeklyMovie+'</h3></div>';
+    h+='<div class="card-body" style="text-align:center">';
+    h+='<img src="'+weeklyPoster+'" style="max-height:400px;border-radius:8px;box-shadow:0 4px 20px rgba(0,0,0,.5)" onerror="this.style.display=\'none\'"/>';
+    h+='</div></div>';
+  }
+  
   // Decades
   var decData=(function(){var d={};M.forEach(function(m){var dec=Math.floor(m.y/10)*10;if(!d[dec])d[dec]={c:0};d[dec].c++;});return Object.keys(d).sort().map(function(k){return{label:k+'s',count:d[k].c,_tip:k+'s: '+d[k].c+' movies'}});})();
 
