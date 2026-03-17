@@ -470,6 +470,21 @@ h+='</tbody></table></div></div></div>';
     h+='<div class="kpi"><div class="icon">⏭️</div><div class="value">'+skipped+'</div><div class="label">Unrated</div></div>';
     h+='</div>';
 
+    // Top and bottom rated submissions
+    var mySubmissions=M.filter(function(m){return m.s===me});
+    var subWithAvg=mySubmissions.map(function(m){
+      var vals=N.map(function(nm){return gr(m,nm)}).filter(function(v){return v!=_});
+      return{t:m.t,y:m.y,gAvg:vals.length?+(avg(vals)).toFixed(2):0,gCount:vals.length};
+    }).filter(function(m){return m.gCount>=2});
+    if(subWithAvg.length){
+      var topSub=subWithAvg.slice().sort(function(a,b){return b.gAvg-a.gAvg})[0];
+      var botSub=subWithAvg.slice().sort(function(a,b){return a.gAvg-b.gAvg})[0];
+      h+='<div class="grid2">';
+      h+='<div class="kpi"><div class="icon">🏆</div><div class="value" style="font-size:1.1rem">'+esc(topSub.t)+'</div><div class="label">Best Submission ('+topSub.gAvg+' ★ avg from '+topSub.gCount+' raters)</div></div>';
+      h+='<div class="kpi"><div class="icon">😬</div><div class="value" style="font-size:1.1rem">'+esc(botSub.t)+'</div><div class="label">Worst Submission ('+botSub.gAvg+' ★ avg from '+botSub.gCount+' raters)</div></div>';
+      h+='</div>';
+    }
+    
     // Rating dist
     var rDist=(function(){var d={};myRated.forEach(function(m){var k=gr(m,me);d[k]=(d[k]||0)+1;});return[0.5,1,1.5,2,2.5,3,3.5,4,4.5,5].map(function(r){return{label:r.toString(),count:d[r]||0,_tip:r+' ★: '+(d[r]||0)};});})();
 
