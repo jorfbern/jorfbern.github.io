@@ -347,10 +347,10 @@ function render() {
   var weeklyPoster = "https://m.media-amazon.com/images/M/MV5BMzBkZmQ0NjMtNTZlMy00ZjdlLTg5ODUtYWFlNGM0YzE3MTg0XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg";
 
   if(weeklyPoster){
-    h+='<div class="card" style="margin-bottom:20px"><div class="card-header"><h3>🍿 This Week: '+weeklyMovie+'</h3></div>';
-    h+='<div class="card-body" style="text-align:center">';
-    h+='<img src="'+weeklyPoster+'" style="max-height:400px;width:auto;border-radius:8px;box-shadow:0 4px 20px rgba(0,0,0,.5)" onerror="this.style.display=\'none\'"/>';
-    h+='</div></div>';
+    h+='<div style="text-align:center;margin-bottom:20px">';
+    h+='<p style="color:#9ca3af;font-size:.85rem;margin-bottom:8px">🍿 This Week: <span style="color:white;font-weight:600">'+weeklyMovie+'</span></p>';
+    h+='<img src="'+weeklyPoster+'" style="max-height:350px;width:auto;border-radius:8px;box-shadow:0 4px 20px rgba(0,0,0,.5)" onerror="this.style.display=\'none\'"/>';
+    h+='</div>';
   }
   
   // Decades
