@@ -491,7 +491,7 @@ h+='</tbody></table></div></div></div>';
       var topSub=subWithAvg.slice().sort(function(a,b){return b.gAvg-a.gAvg})[0];
       var botSub=subWithAvg.slice().sort(function(a,b){return a.gAvg-b.gAvg})[0];
       h+='<div class="grid2">';
-      h+='<div class="kpi"><div class="icon">🏆</div><div class="value" style="font-size:1.1rem">'+esc(topSub.t)+'</div><div class="label">Best Submission ('+topSub.gAvg+' ★ avg from '+topSub.gCount+' raters)</div></div>';
+      h+='<div class="kpi"><div class="icon">🔥</div><div class="value" style="font-size:1.1rem">'+esc(topSub.t)+'</div><div class="label">Best Submission ('+topSub.gAvg+' ★ avg from '+topSub.gCount+' raters)</div></div>';
       h+='<div class="kpi"><div class="icon">😬</div><div class="value" style="font-size:1.1rem">'+esc(botSub.t)+'</div><div class="label">Worst Submission ('+botSub.gAvg+' ★ avg from '+botSub.gCount+' raters)</div></div>';
       h+='</div>';
     }
@@ -535,7 +535,7 @@ h+='</tbody></table></div></div></div>';
     h+='<div class="card"><div class="card-header"><h3>👎 Biggest Disappointments</h3><p>Critics loved it, '+me+' didn\'t</p></div><div class="card-body">';
     disap.forEach(function(m){h+=htCard(m);});
     h+='</div></div>';
-    h+='<div class="card"><div class="card-header"><h3>🔥 Hidden Gems</h3><p>'+me+' saw something critics missed</p></div><div class="card-body">';
+    h+='<div class="card"><div class="card-header"><h3>💎 Hidden Gems</h3><p>'+me+' saw something critics missed</p></div><div class="card-body">';
     gems.forEach(function(m){h+=htCard(m);});
     h+='</div></div>';
     h+='</div>';
